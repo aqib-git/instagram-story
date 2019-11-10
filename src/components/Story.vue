@@ -3,7 +3,7 @@
     <div class="story">
       <div class="story__indicators">
         <div
-          :class="{'story__indicator': true, 'last': stories.length -1 === index}"
+          :class="{'story__indicator': true, 'last': stories.length - 1 === index}"
           v-for="(story, index) in stories"
           :key="index">
           <span
@@ -29,6 +29,12 @@
           </video>
         </div>
       </div>
+      <div
+        class="story__overlay"
+        @mousedown="onStoryTouchStart"
+        @mouseup="onStoryTouchEnd"
+        @touchstart="onStoryTouchStart"
+        @touchend="onStoryTouchEnd"></div>
     </div>
   </div>
 </template>
@@ -42,6 +48,7 @@ export default {
   data() {
     return {
       delay: 5000,
+      paused: false,
     };
   },
   methods: {
@@ -49,6 +56,8 @@ export default {
       const video = this.$refs[`video${this.currentStory.id}`];
       const increment = 0.2;
       let interval = (this.delay * increment) / 100;
+
+      this.pauseVideoStories();
 
       if (this.currentStory.type === 'video' && !video) {
         return;
@@ -95,11 +104,28 @@ export default {
             return;
           }
 
+          if (this.paused) {
+            return;
+          }
+
           this.$store.dispatch(actionTypes.STORY_UPDATE_PROGRESS, {
             progress: this.currentStory.progress + increment,
           });
         }, interval),
       });
+    },
+    pauseVideoStories() {
+      const stories = this.stories
+        .filter(story => story.type === 'video');
+
+      for (let i = 0; i < stories.length; i += 1) {
+        const story = stories[i];
+        const video = this.$refs[`video${story.id}`];
+
+        if (video && video[0]) {
+          video[0].pause();
+        }
+      }
     },
     onLoadedData(event, index) {
       if (this.stories[index].duration !== -1) {
@@ -112,6 +138,74 @@ export default {
       }).then(() => {
         this.startStory();
       });
+    },
+    onTouch(event, type) {
+      const width = event.target.offsetWidth;
+      const leftArea = [0, width * (33.33 / 100)];
+      const midArea = [leftArea[1], width * (66.66 / 100)];
+      const rightArea = [midArea[1], width];
+
+      if (type === 'start' && event.layerX >= leftArea[0] && event.layerX < leftArea[1]) {
+        if (this.stories.length <= 1 || this.index === 0) {
+          return;
+        }
+
+        this.$store.dispatch(actionTypes.STORY_PREV)
+          .then(() => {
+            this.startStory();
+          });
+
+        return;
+      }
+
+      if (type === 'start' && event.layerX >= rightArea[0] && event.layerX < rightArea[1]) {
+        if (this.stories.length <= 1 || this.index >= (this.stories.length - 1)) {
+          return;
+        }
+
+        this.$store.dispatch(actionTypes.STORY_NEXT)
+          .then(() => {
+            this.startStory();
+          });
+
+        return;
+      }
+
+      if (event.layerX >= midArea[0] && event.layerX < midArea[1]) {
+        this.paused = type === 'start';
+
+        const video = this.$refs[`video${this.currentStory.id}`];
+
+        if (this.currentStory.type !== 'video') {
+          return;
+        }
+
+        if (type === 'end') {
+          video[0].play();
+
+          return;
+        }
+
+        video[0].pause();
+      }
+    },
+    onStoryTouchStart(event) {
+      if (this.stories.length === 0) {
+        return;
+      }
+
+      event.preventDefault();
+
+      this.onTouch(event, 'start');
+    },
+    onStoryTouchEnd(event) {
+      if (this.stories.length === 0) {
+        return;
+      }
+
+      event.preventDefault();
+
+      this.onTouch(event, 'end');
     },
   },
   computed: {
@@ -135,17 +229,17 @@ export default {
         return;
       }
 
-      if (this.stories.length > 1) {
-        const story = this.stories[this.stories.length - 2];
+      // if (this.stories.length > 1) {
+      //   const story = this.stories[this.stories.length - 2];
 
-        if (story.type === 'video') {
-          const video = this.$refs[`video${story.id}`];
+      //   if (story.type === 'video') {
+      //     const video = this.$refs[`video${story.id}`];
 
-          if (video && video[0]) {
-            video[0].pause();
-          }
-        }
-      }
+      //     if (video && video[0]) {
+      //       video[0].pause();
+      //     }
+      //   }
+      // }
 
       this.startStory();
     },
@@ -202,6 +296,15 @@ export default {
         width: 0%;
         background-color: white;
       }
+    }
+
+    &__overlay {
+      position:absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
     }
 
     &__media {

@@ -86,6 +86,34 @@ export default new Vuex.Store({
     [mutationTypes.STORY_UPDATE_VIDEO_DURATION](state, data) {
       Vue.set(state.stories[data.index], 'duration', data.duration);
     },
+    [mutationTypes.STORY_PREV](state) {
+      if (state.intervalId) {
+        clearInterval(state.intervalId);
+        state.intervalId = null;
+      }
+
+      state.index -= 1;
+
+      for (let i = state.index; i < state.stories.length; i += 1) {
+        Vue.set(state.stories[i], 'progress', 0);
+      }
+    },
+    [mutationTypes.STORY_NEXT](state) {
+      if (state.intervalId) {
+        clearInterval(state.intervalId);
+        state.intervalId = null;
+      }
+
+      state.index += 1;
+
+      for (let i = 0; i < state.index; i += 1) {
+        Vue.set(state.stories[i], 'progress', 100);
+      }
+
+      for (let i = state.index; i < state.stories.length; i += 1) {
+        Vue.set(state.stories[i], 'progress', 0);
+      }
+    },
   },
   actions: {
     [actionTypes.STORY_ADD](context, data) {
@@ -108,6 +136,12 @@ export default new Vuex.Store({
     },
     [actionTypes.STORY_UPDATE_VIDEO_DURATION](context, data) {
       context.commit(mutationTypes.STORY_UPDATE_VIDEO_DURATION, data);
+    },
+    [actionTypes.STORY_PREV](context) {
+      context.commit(mutationTypes.STORY_PREV);
+    },
+    [actionTypes.STORY_NEXT](context) {
+      context.commit(mutationTypes.STORY_NEXT);
     },
   },
   modules: {
