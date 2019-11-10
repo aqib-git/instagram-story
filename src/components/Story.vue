@@ -209,7 +209,7 @@ export default {
       }
     },
     onStoryTouchStart(event) {
-      if (this.stories.length === 0) {
+      if (this.stories.length === 0 || event.which !== 1) {
         return;
       }
 
@@ -220,7 +220,7 @@ export default {
       this.onTouch(event, 'start');
     },
     onStoryTouchEnd(event) {
-      if (this.stories.length === 0) {
+      if (this.stories.length === 0 || event.which !== 1) {
         return;
       }
 
