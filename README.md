@@ -1,4 +1,6 @@
-# instagram-story
+# Instagram story component
+
+![Story](https://monosnap.com/direct/yEgTlNUiUNHlC3Nwf66GtXoQrFQSpW)
 
 ## Project setup
 ```
