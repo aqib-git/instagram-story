@@ -9,7 +9,7 @@ export default new Vuex.Store({
   state: {
     stories: [],
     index: -1,
-    name: 'Codesm',
+    name: 'Aqib',
     intervalId: null,
   },
   getters: {

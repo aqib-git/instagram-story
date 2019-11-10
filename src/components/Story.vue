@@ -11,6 +11,15 @@
           </span>
         </div>
       </div>
+      <div class="story__meta" v-if="stories.length > 0">
+        <div class="story__meta__avatar">
+          <img src="https://instagram.fdel11-1.fna.fbcdn.net/vp/beca63fedef3f442c0a525e7239407f7/5E47F369/t51.2885-19/s150x150/64974692_661204254341795_2793570488801034240_n.jpg?_nc_ht=instagram.fdel11-1.fna.fbcdn.net">
+        </div>
+        <div class="story__meta__author">
+          <span class="story__meta__author__name">{{name}}</span>
+          <span class="story__meta__date">8m ago</span>
+        </div>
+      </div>
       <div class="story__placeholder" v-if="stories.length === 0">
         <i class="fas fa-images"></i>
       </div>
@@ -32,9 +41,7 @@
       <div
         class="story__overlay"
         @mousedown="onStoryTouchStart"
-        @mouseup="onStoryTouchEnd"
-        @touchstart="onStoryTouchStart"
-        @touchend="onStoryTouchEnd"></div>
+        @mouseup="onStoryTouchEnd"></div>
     </div>
   </div>
 </template>
@@ -49,6 +56,7 @@ export default {
     return {
       delay: 5000,
       paused: false,
+      touchStartTime: null,
     };
   },
   methods: {
@@ -172,6 +180,21 @@ export default {
       }
 
       if (event.layerX >= midArea[0] && event.layerX < midArea[1]) {
+        const touchDuration = (Date.now() - this.touchStartTime) / 1000;
+
+        if (touchDuration < 1) {
+          if (type !== 'end' || this.stories.length <= 1 || this.index >= (this.stories.length - 1)) {
+            return;
+          }
+
+          this.$store.dispatch(actionTypes.STORY_NEXT)
+            .then(() => {
+              this.startStory();
+            });
+
+          return;
+        }
+
         this.paused = type === 'start';
 
         const video = this.$refs[`video${this.currentStory.id}`];
@@ -195,6 +218,8 @@ export default {
       }
 
       event.preventDefault();
+
+      this.touchStartTime = Date.now();
 
       this.onTouch(event, 'start');
     },
@@ -229,18 +254,6 @@ export default {
         return;
       }
 
-      // if (this.stories.length > 1) {
-      //   const story = this.stories[this.stories.length - 2];
-
-      //   if (story.type === 'video') {
-      //     const video = this.$refs[`video${story.id}`];
-
-      //     if (video && video[0]) {
-      //       video[0].pause();
-      //     }
-      //   }
-      // }
-
       this.startStory();
     },
   },
@@ -266,6 +279,48 @@ export default {
       i {
         font-size: 120px;
         color: lightgrey;
+      }
+    }
+
+    &__meta {
+      display: flex;
+      align-items: center;
+      position: absolute;
+      top: 12px;
+      padding: 5px;
+
+      &__avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 5px;
+        box-shadow: 0 0 2px black;
+
+        img {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          max-width: 100%;
+        }
+      }
+
+      &__author {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        flex: 1;
+        color: white;
+        text-shadow: 0 0 2px black;
+
+        &__name {
+          font-weight: bold;
+          font-size: 16px;
+
+        }
+      }
+
+      &__date {
+        font-size: 13px;
       }
     }
 
