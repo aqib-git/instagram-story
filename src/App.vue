@@ -1,32 +1,47 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
     <router-view/>
   </div>
 </template>
 
-<style>
+<script>
+export default {
+  mounted() {
+  },
+};
+</script>
+
+<style lang="scss">
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
 }
 
-#nav {
-  padding: 30px;
+input {
+  font-size: 16px;
+  padding: 5px;
+  border: 1px solid #2c3e50;
+  border-radius: 3px;
+  height: 30px;
+  outline: none;
 }
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+button {
+  background: lightslategrey;
+  color: white;
+  border: 0;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+   box-shadow: 0 2px 2px #5d6771;
+  cursor: pointer;
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background: #909faf;
+  }
 }
 </style>
