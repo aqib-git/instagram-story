@@ -1,8 +1,9 @@
 <template>
   <div class="form-component">
     <div class="create-story">
+      <div class="create-story__header"><h2>Create Your Own Story</h2></div>
       <div class="create-story__name">
-        <label>Page Name</label>
+        <label>Name</label>
         <input placeholder="Codesm" :value="name" @input="updateStoryName"/>
       </div>
       <div class="create-story__add">
@@ -81,6 +82,16 @@ export default {
   .create-story {
     > div {
       margin-bottom: 20px;
+    }
+
+    &__header {
+      padding: 10px;
+      text-align: center;
+
+      h2 {
+        font-size: 30px;
+        font-family: 'Yeon Sung', cursive;
+      }
     }
 
     &__name {

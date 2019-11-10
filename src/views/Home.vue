@@ -1,7 +1,12 @@
 <template>
   <div class="home-view">
-    <create-story></create-story>
-    <story></story>
+    <div class="home-view__header">
+      <img src="../assets/images/instagram.png" alt="Instagram"> <span> Stories </span>
+    </div>
+    <div class="home-view__body">
+      <create-story></create-story>
+      <story></story>
+    </div>
   </div>
 </template>
 
@@ -20,13 +25,44 @@ export default {
 
 <style lang="scss">
 .home-view {
-  display: flex;
-  justify-content: space-between;
-  max-width: 900px;
-  margin: auto;
+  &__header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 50px;
 
-  > div {
-    width: 48%;
+    span {
+      display: inline-block;
+      font-family: 'Yeon Sung', cursive;
+      font-size: 45px;
+      margin-left: 15px;
+    }
+
+    img {
+      max-width: 70px;
+      border-radius: 10px;
+    }
+  }
+
+  &__body {
+    display: flex;
+    justify-content: space-between;
+    max-width: 900px;
+    margin: auto;
+
+    > div {
+      width: 48%;
+      margin-bottom: 30px;
+    }
+
+    @media only screen and (max-width: 991px) {
+      flex-direction: column;
+      align-items: center;
+
+      > div {
+        width: 90%;
+      }
+    }
   }
 }
 </style>

@@ -182,17 +182,13 @@ export default {
       if (event.layerX >= midArea[0] && event.layerX < midArea[1]) {
         const touchDuration = (Date.now() - this.touchStartTime) / 1000;
 
-        if (touchDuration < 1) {
-          if (type !== 'end' || this.stories.length <= 1 || this.index >= (this.stories.length - 1)) {
-            return;
+        if (touchDuration < 0.1) {
+          if (type === 'end' && this.stories.length > 1 && this.index < (this.stories.length - 1)) {
+            this.$store.dispatch(actionTypes.STORY_NEXT)
+              .then(() => {
+                this.startStory();
+              });
           }
-
-          this.$store.dispatch(actionTypes.STORY_NEXT)
-            .then(() => {
-              this.startStory();
-            });
-
-          return;
         }
 
         this.paused = type === 'start';
@@ -387,6 +383,15 @@ export default {
         height: 100%;
         object-fit: cover;
       }
+    }
+  }
+
+  @media only screen and (max-width: 991px) {
+    display: flex;
+    justify-content: center;
+
+    .story {
+      margin-left: initial;
     }
   }
 }
